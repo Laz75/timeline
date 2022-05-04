@@ -4,30 +4,26 @@ import styles from 'styles/Home.module.scss'
 import { Event } from 'lib/types'
 import EventBlock from 'components/eventBlock'
 import { GetStaticProps, InferGetStaticPropsType, NextPage } from 'next'
-import { SetStateAction, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
 
 
 export const getStaticProps: GetStaticProps = async () => {
-  const res = await fetch('https://www.jimsteinman.it/timeline/wp-json/wp/v2/timeline?_embed');
+  const res = await fetch('https://www.jimsteinman.it/timeline/wp-json/wp/v2/timeline?_embed&per_page=100');
   const data = await res.json()
 
   return {
-    props: { timeline: data },
+    props: { timeline: data.sort((a: { acf: { start_date: { localeCompare: (arg0: any) => any } } }, b: { acf: { start_date: any } }) => a.acf.start_date.localeCompare(b.acf.start_date)) },
     revalidate: 60
   };
 };
 
 const Home: NextPage = ({ timeline }: InferGetStaticPropsType<typeof getStaticProps>) => {
-
-  dayjs.extend(relativeTime)
-
   const [categories, setCategories] = useState({})
   const [activeEvent, setActiveEvent] = useState('')
-  const years = [1975, 1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990]
+  const years = Array.from({length: 46}, (_, i) => i + 1975) // Creates an array with 46 years starting in 1975.
   const startDate = dayjs('1975-01-01')
-  const endDate = dayjs('1990-12-31')
+  const endDate = dayjs('2020-12-31')
   const totalDays = endDate.diff(startDate, 'day')
 
   const result = timeline.reduce(function (r: { [x: string]: any[] }, a: { _embedded: { [x: string]: { [x: string]: { [x: string]: { name: string | number } } } } }) {
@@ -40,7 +36,6 @@ const Home: NextPage = ({ timeline }: InferGetStaticPropsType<typeof getStaticPr
       setActiveEvent(slug)
     };
     
-
     useEffect(() => { 
       setCategories(result)
     }, [result])
