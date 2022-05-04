@@ -1,0 +1,45 @@
+:root {
+  --font-stack: Merriweather, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+  Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-stack);
+  background: rgb(162,44,44);
+  background: radial-gradient(circle, rgba(162,44,44,1) 0%, rgba(57,4,4,1) 100%);
+  color: #fff;
+  background-attachment: fixed;
+  overflow-x: hidden;;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+   color: inherit;
+   font-family: var(--font-stack);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 0 2rem;
+}
+
+.main {
+  min-height: 100vh;
+  padding: 1rem 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
