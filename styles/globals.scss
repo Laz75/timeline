@@ -1,7 +1,8 @@
 :root {
   --font-stack: Merriweather, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
   Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  --timeline-width: 10000px
+  --timeline-width: 10000px;
+  --bar-color: #044258;
 }
 
 
@@ -29,6 +30,10 @@ button {
 
 * {
   box-sizing: border-box;
+}
+
+:root {
+  accent-color: var(--bar-color);
 }
 
 .container {
