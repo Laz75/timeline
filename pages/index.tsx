@@ -19,27 +19,27 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Home: NextPage = ({ timeline }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const [categories, setCategories] = useState({})
-  const [activeEvent, setActiveEvent] = useState('')
-  const years = Array.from({length: 46}, (_, i) => i + 1975) // Creates an array with 46 years starting in 1975.
+
+  const years = Array.from({length: 47}, (_, i) => i + 1975) // Creates an array with 47 years starting in 1975.
   const startDate = dayjs('1975-01-01')
-  const endDate = dayjs('2020-12-31')
+  const endDate = dayjs('2021-12-31')
   const totalDays = endDate.diff(startDate, 'day')
 
-  const result = timeline.reduce(function (r: { [x: string]: any[] }, a: { _embedded: { [x: string]: { [x: string]: { [x: string]: { name: string | number } } } } }) {
-        r[a._embedded['wp:term']['0']['0'].name] = r[a._embedded['wp:term']['0']['0'].name] || [];
-        r[a._embedded['wp:term']['0']['0'].name].push(a);
-        return r;
-    }, Object.create(null));
+  const [activeEvent, setActiveEvent] = useState('')
+  const handleClick = (slug: string) => {
+    setActiveEvent(slug)
+  };
 
-    const handleClick = (slug: string) => {
-      setActiveEvent(slug)
-    };
-    
-    useEffect(() => { 
-      setCategories(result)
-    }, [result])
+  const result = timeline.reduce(function (r: { [x: string]: any[] }, a: { _embedded: { [x: string]: { [x: string]: { [x: string]: { name: string | number } } } } }) {
+    r[a._embedded['wp:term']['0']['0'].name] = r[a._embedded['wp:term']['0']['0'].name] || [];
+    r[a._embedded['wp:term']['0']['0'].name].push(a);
+    return r;
+}, Object.create(null));
   
+  const [categories, setCategories] = useState({})
+  useEffect(() => { 
+    setCategories(result)
+  }, [result])
 
   return (
     <div className="container">
