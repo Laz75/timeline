@@ -11,8 +11,6 @@ import dayjs from 'dayjs'
 export const getStaticProps: GetStaticProps = async () => {
   let categories = await getCategories();
 
-  console.log(categories)
-
   // I need to sort the subquery here because WPGraphQL can't sort custom fields.
   categories.nodes.forEach((category: Category) => {
     category.events.nodes.sort((a: { timeline: { startDate: string }; }, b: { timeline: { startDate: string; }; }) => a.timeline.startDate.localeCompare(b.timeline.startDate))
