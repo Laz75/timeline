@@ -1,26 +1,27 @@
 
 export interface Event {
   slug: string
-  title: {
-    rendered: string
+  title: string
+  description: string
+  timeline: {
+    startDate: string
+    endDate: string
   }
-  acf: {
-    start_date: string
-    end_date: string
-  }
-  _embedded: {
-  'wp:featuredmedia': [
-    {
-      source_url: string
+  featuredImage: {
+    node: {
+      sourceUrl: string
     }
-  ],
-  'wp:term': [[
-    {
-      name: string
+  },
+  categories: [{
+    nodes: {
+      category: string
     }
-  ]]
+  }]
 }
-  content: {
-    rendered: string
-  } 
+
+export interface Category {
+  name: string
+  events: {
+    nodes: Event[]
+  }
 }

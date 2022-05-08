@@ -35,7 +35,7 @@ const securityHeaders = [
 const nextConfig = {
   reactStrictMode: true,
   trailingSlash: false,
-  optimizeFonts: false, // Apparently, this option on causes some issue in some systems
+  optimizeFonts: true, // Apparently, this option on causes some issue in some systems
   swcMinify: true, // Still not production ready, but will soon be
   images: { // Added avif, not included in the default configuration
     formats: ["image/avif", "image/webp"],

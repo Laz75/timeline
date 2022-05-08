@@ -1,7 +1,7 @@
 import Head from 'next/head'
-import Image from 'next/image'
+import { getCategories } from "lib/api";
 import styles from 'styles/Home.module.scss'
-import { Event } from 'lib/types'
+import { Event, Category } from 'lib/types'
 import EventBlock from 'components/eventBlock'
 import { GetStaticProps, InferGetStaticPropsType, NextPage } from 'next'
 import { useEffect, useState } from 'react'
@@ -9,16 +9,22 @@ import dayjs from 'dayjs'
 
 
 export const getStaticProps: GetStaticProps = async () => {
-  const res = await fetch('https://www.jimsteinman.it/timeline/wp-json/wp/v2/timeline?_embed&per_page=100');
-  const data = await res.json()
+  let categories = await getCategories();
 
+  // I need to sort the subquery here because WPGraphQL can't sort custom fields.
+  categories.nodes.forEach((category: Category) => {
+    category.events.nodes.sort((a: { timeline: { startDate: string }; }, b: { timeline: { startDate: string; }; }) => a.timeline.startDate.localeCompare(b.timeline.startDate))
+  })
+ 
   return {
-    props: { timeline: data.sort((a: { acf: { start_date: { localeCompare: (arg0: any) => any } } }, b: { acf: { start_date: any } }) => a.acf.start_date.localeCompare(b.acf.start_date)) },
+    props: { 
+      categories: categories.nodes
+    },
     revalidate: 60
   };
 };
 
-const Home: NextPage = ({ timeline }: InferGetStaticPropsType<typeof getStaticProps>) => {
+const Home: NextPage = ({ categories }: InferGetStaticPropsType<typeof getStaticProps>) => {
 
   const years = Array.from({length: 47}, (_, i) => i + 1975) // Creates an array with 47 years starting in 1975.
   const startDate = dayjs('1975-01-01')
@@ -29,17 +35,6 @@ const Home: NextPage = ({ timeline }: InferGetStaticPropsType<typeof getStaticPr
   const handleClick = (slug: string) => {
     setActiveEvent(slug)
   };
-
-  const result = timeline.reduce(function (r: { [x: string]: any[] }, a: { _embedded: { [x: string]: { [x: string]: { [x: string]: { name: string | number } } } } }) {
-    r[a._embedded['wp:term']['0']['0'].name] = r[a._embedded['wp:term']['0']['0'].name] || [];
-    r[a._embedded['wp:term']['0']['0'].name].push(a);
-    return r;
-}, Object.create(null));
-  
-  const [categories, setCategories] = useState({})
-  useEffect(() => { 
-    setCategories(result)
-  }, [result])
 
   return (
     <div className="container">
@@ -52,9 +47,9 @@ const Home: NextPage = ({ timeline }: InferGetStaticPropsType<typeof getStaticPr
       <main className="main">
         <h1>My Timeline</h1>
         <div className={styles.timeline}>
-          {Object.entries(categories).map(([key, value]) => (
-            <section key={key}>
-              <h2>{key}</h2>
+          {categories.map((category: Category) => (
+            <section key={category.name}>
+              <h2>{category.name}</h2>
               <ol className={styles.bar}>
                 {years.map((year: number) => (
                    <li key={year} className={styles.year}>
@@ -63,19 +58,19 @@ const Home: NextPage = ({ timeline }: InferGetStaticPropsType<typeof getStaticPr
                 ))}
               </ol>
               <ol className={styles.section}>
-                {(value as [])?.map((event: Event) => (
+                {(category.events.nodes as [])?.map((event: Event) => (
                   <li
                     key={event.slug}
                     style={{
-                      left: dayjs(event.acf.start_date).diff(startDate, 'day') * 100 / totalDays + '%', 
-                      width: event.acf.end_date !== "" ? dayjs(event.acf.end_date).diff(startDate, 'day') * 100 / totalDays - dayjs(event.acf.start_date).diff(startDate, 'day') * 100 / totalDays + '%' : 'auto'
+                      left: dayjs(event.timeline.startDate).diff(startDate, 'day') * 100 / totalDays + '%', 
+                      width: event.timeline.endDate !== "" ? dayjs(event.timeline.endDate).diff(startDate, 'day') * 100 / totalDays - dayjs(event.timeline.startDate).diff(startDate, 'day') * 100 / totalDays + '%' : 'auto'
                     }}
-                    className={event.acf.end_date !== "" ? styles.end : ''}
+                    className={event.timeline.endDate !== "" ? styles.end : ''}
                   >
-                    <button onClick={() => handleClick(event.slug)} className={styles.info}>{ dayjs(event.acf.start_date).format('DD-MM-YYYY') } 
+                    <button onClick={() => handleClick(event.slug)} className={styles.info}>{ dayjs(event.timeline.startDate).format('DD-MM-YYYY') } 
                       <span 
                         dangerouslySetInnerHTML={{
-                          __html: event.title.rendered
+                          __html: event.title
                         }}
                       />
                     </button>
