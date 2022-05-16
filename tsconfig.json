@@ -18,6 +18,6 @@
     "typeRoots": [ "./types", "./node_modules/@types"],
     "useUnknownInCatchVariables": false
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/api/auth/[...auth0].js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/api/auth/[...auth0].js", "pages/api.js"],
   "exclude": ["node_modules"]
 }

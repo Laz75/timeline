@@ -4,7 +4,7 @@ import styles from 'styles/Home.module.scss'
 import { Event, Category } from 'lib/types'
 import EventBlock from 'components/eventBlock'
 import { GetStaticProps, InferGetStaticPropsType, NextPage } from 'next'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import dayjs from 'dayjs'
 
 
@@ -63,9 +63,9 @@ const Home: NextPage = ({ categories }: InferGetStaticPropsType<typeof getStatic
                     key={event.slug}
                     style={{
                       left: dayjs(event.timeline.startDate).diff(startDate, 'day') * 100 / totalDays + '%', 
-                      width: event.timeline.endDate !== "" ? dayjs(event.timeline.endDate).diff(startDate, 'day') * 100 / totalDays - dayjs(event.timeline.startDate).diff(startDate, 'day') * 100 / totalDays + '%' : 'auto'
+                      width: event.timeline.endDate ? dayjs(event.timeline.endDate).diff(startDate, 'day') * 100 / totalDays - dayjs(event.timeline.startDate).diff(startDate, 'day') * 100 / totalDays + '%' : 'auto'
                     }}
-                    className={event.timeline.endDate !== "" ? styles.end : ''}
+                    className={event.timeline.endDate ? styles.end : ''}
                   >
                     <button onClick={() => handleClick(event.slug)} className={styles.info}>{ dayjs(event.timeline.startDate).format('DD-MM-YYYY') } 
                       <span 
