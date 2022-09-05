@@ -12,13 +12,14 @@ type EventProps = {
 }
 
 /*
- * This component creates a block for a restaurant that appears in homepage
+ * This component creates a block for an event that appears in homepage
  */
 export default function EventBlock({event, show, resetEvent}: EventProps) {
 
   return (
-
-    <article className={styles.mask} style={{display: show ? '' : 'none'}}>
+    <>
+    { show
+     ? <article className={styles.mask}>
       <div className={styles.block}>
         { event.featuredImage?.node?.sourceUrl !== undefined ? 
         <div className={styles.imageWrapper}>
@@ -44,5 +45,8 @@ export default function EventBlock({event, show, resetEvent}: EventProps) {
           <button className={styles.close} onClick={() => resetEvent('')}>×</button>
         </div>
     </article>
+    : null
+    }
+    </>
   )
 }
